@@ -1,0 +1,13 @@
+#transition_input {
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    width: 100px;
+}
+
+#activate_transition {
+    position: absolute;
+    top: 50px;
+    left: 210px;
+}
+
