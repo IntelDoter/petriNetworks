@@ -13,103 +13,33 @@ let transitionOutputArr = [
     [0, 3]
 ];*/
 
-let positionsWeightArr = [1, 1, 0, 2];
-let isWeightChanged = [false, false ,false, false];
-let transitionWeightArr = [0, 0, 0];
 
-let transitionInputArr = [
-    [0, 1, 3],
-    [1],
-    [2]
-];
+//Объявление переменных
+let positionsWeightArr = [1, 1, 2, 0];
+let amountOfTransitions = 3;
+let activatedTransitionsCounter = 0;
+let isWeightActivated = [false, false, false];
+let input = document.getElementById("transition_input");
+let btn = document.getElementById("activate_transition");
 
-let transitionOutputArr = [
-    [0],
-    [2],
-    [1, 3, 3]
-];
-
-let state = "Resting";
-
-function setNextState() {
-    if (state === "Resting") {
-        state = "Active";
-    } else {
-        state = "Resting";
-    }
-}
-
-function checkChanges() {
-    for (let i = 0; i < isWeightChanged.length; i++) {
-        if (isWeightChanged[i]) {
-            positionsWeightArr[i] -= 1;
-            isWeightChanged[i] = false;
-        }
-    }
-}
-
-function nextState() {
-    clearWeights();
-
-    if (state === "Resting") {
-        setNextState();
-        for (let i = 0; i < transitionInputArr.length; i++) {
-            for (let j = 0; j < transitionInputArr[i].length; j++) {
-                let index = transitionInputArr[i][j];
-
-                if (positionsWeightArr[index] > 0) {
-                    isWeightChanged[index] = true;
-                    transitionWeightArr[i] = transitionOutputArr[i].length;
-                }
-            }
-        }
-
-        checkChanges();
-
-        clearChips();
-        for (let i = 0; i < transitionWeightArr.length; i++) {
-            if (transitionWeightArr[i] > 0) {
-                addChip("active", i)
-            }
-        }
-    } else {
-        setNextState();
-        for (let i = 0; i < transitionOutputArr.length; i++) {
-            if (transitionWeightArr[i] > 0) {
-                for (let j = 0; j < transitionOutputArr[i].length; j++) {
-                    let index = transitionOutputArr[i][j];
-                    positionsWeightArr[index] += 1;
-                }
-                transitionWeightArr[i] -= 1;
-            }
-        }
-
-        clearChips();
-        for (let i = 0; i < positionsWeightArr.length; i ++) {
-            if (positionsWeightArr[i] > 0) {
-                addChip("rest", i);
-            }
-        }
-    }
-
-    for (let i = 0; i < positionsWeightArr.length; i++) {
-        drawWeights(i);
-    }
-
-    console.log(state);
-    console.log("Веса переходов", positionsWeightArr);
-    console.log("Веса состояний", transitionWeightArr);
-}
-
-let btn = document.getElementById("btn_next_state");
-btn.onclick = function() {
-    nextState();
-};
-console.log(state);
-console.log(positionsWeightArr);
-
+let arrOfObjects = [];
+let arrOfText = [];
 let canvas = new fabric.StaticCanvas('canvas');
 
+let transitionInputArr = {
+    1: [0, 1, 3],
+    2: [1],
+    3: [2]
+};
+
+let transitionOutputArr = {
+    1: [0],
+    2: [2],
+    3: [1, 3, 3]
+};
+
+
+// Графика
 let imgElement = document.getElementById('my-image');
 let imgInstance = new fabric.Image(imgElement, {
     left: 0,
@@ -117,38 +47,11 @@ let imgInstance = new fabric.Image(imgElement, {
 });
 canvas.add(imgInstance);
 
-let arrOfObjects = [];
-let arrOfText = [];
 function clearChips() {
     for (let i = 0; i < arrOfObjects.length; i++) {
         arrOfObjects[i].remove();
     }
     arrOfObjects.length = 0;
-}
-
-function drawWeights(number) {
-    let coordsWeight = {
-        0: {
-            left: 43,
-            top: 230
-        },
-        1: {
-            left: 375,
-            top: 130
-        },
-        2: {
-            left: 630,
-            top: 0
-        },
-        3: {
-            left: 290,
-            top: 350
-        }
-    };
-
-    let text = new fabric.Text(positionsWeightArr[number].toString(), { left: coordsWeight[number].left, top: coordsWeight[number].top });
-    arrOfText.push(text);
-    canvas.add(text);
 }
 
 function clearWeights() {
@@ -158,38 +61,63 @@ function clearWeights() {
     arrOfText.length = 0;
 }
 
-function addChip(type, num) {
-    let coordsPositions = {
-        0: {
-            left: 43,
-            top: 172
-        },
+function drawWeights(number) {
+    let coordsWeight = {
         1: {
-            left: 370,
-            top: 70
+            left: 75,
+            top: 340
         },
         2: {
-        left: 630,
-            top: 70
+            left: 430,
+            top: 10
         },
         3: {
-            left: 300,
-            top: 290
+            left: 830,
+            top: 10
+        },
+        4: {
+            left: 435,
+            top: 490
+        }
+    };
+
+    let text = new fabric.Text(positionsWeightArr[number - 1].toString(), { left: coordsWeight[number].left, top: coordsWeight[number].top });
+    arrOfText.push(text);
+    canvas.add(text);
+}
+
+function addChip(type, num) {
+    let coordsPositions = {
+        1: {
+            left: 75,
+            top: 275
+        },
+        2: {
+            left: 430,
+            top: 90
+        },
+        3: {
+            left: 830,
+            top: 90
+        },
+        4: {
+            left: 435,
+            top: 425
         }
     };
 
     let coordsTransitions = {
-        0 : {
-            left: 175,
-            top: 172
-        },
-        1: {
-            left: 505,
-            top: 50
+        1 : {
+            left: 240,
+            top: 280
         },
         2: {
-            left: 475   ,
-            top: 300
+            left: 605,
+            top: 80
+        },
+        3: {
+            left: 640,
+            top: 440
         }
     };
 
@@ -201,21 +129,77 @@ function addChip(type, num) {
         canvas.add(circle);
     }
 
-    if (type === "rest") {
+    if (type == "position") {
         drawChip(coordsPositions[num])
     } else {
         drawChip(coordsTransitions[num])
     }
+
 }
 
-for (let i = 0; i < positionsWeightArr.length; i ++) {
-    if (positionsWeightArr[i] > 0) {
-        addChip("rest", i);
+function refresh() {
+    clearChips();
+    clearWeights();
+
+    for (let i = 1; i <= positionsWeightArr.length; i++) {
+        if (positionsWeightArr[i - 1] > 0) {
+            addChip("position", i);
+        }
+        drawWeights(i);
     }
+
 }
 
-for (let i = 0; i < positionsWeightArr.length; i++) {
-    drawWeights(i);
+
+// Main
+refresh();
+
+function activateTransition(num) {
+    for (let i = 0; i < transitionInputArr[num].length; i++) {
+        let index = transitionInputArr[num][i];
+        if (positionsWeightArr[index] <= 0) {
+            console.log("Переход невозможен");
+            return;
+        }
+    }
+
+    for (let i = 0; i < transitionInputArr[num].length; i++) {
+        let index = transitionInputArr[num][i];
+        positionsWeightArr[index] -= 1;
+    }
+
+    refresh();
+    addChip("transition", num);
+
+    for (let i = 0; i < transitionOutputArr[num].length; i++) {
+        let index = transitionOutputArr[num][i];
+        positionsWeightArr[index] += 1;
+    }
+
+    setTimeout(refresh, 500);
+    console.log(positionsWeightArr);
 }
+
+
+btn.onclick = function() {
+    if (input.value) {
+        let index = input.value;
+        if (!isWeightActivated[index - 1]) {
+            activateTransition(input.value);
+            input.value = "";
+            isWeightActivated[index - 1] = true;
+            activatedTransitionsCounter++;
+        } else {
+            console.log("Переход уже был активирован в данной итерации");
+        }
+    }
+
+    if (activatedTransitionsCounter == amountOfTransitions) {
+        for (let i = 0; i < isWeightActivated.length; i++) {
+            isWeightActivated[i] = false;
+        }
+        activatedTransitionsCounter = 0;
+    }
+};
 
 
